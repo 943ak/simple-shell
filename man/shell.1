@@ -1,0 +1,140 @@
+.Dd January 2026
+.Dt DYNAMIC-ABHI 1
+.Os Linux
+.Sh NAME
+.Nm dynamic-abhi
+.Nd a simple Unix-like shell supporting pipes and I/O redirection
+.Sh SYNOPSIS
+.Nm dynamic-abhi
+.Sh DESCRIPTION
+.Nm
+is a minimal interactive shell implemented in C.
+It allows the user to execute external commands using
+.Xr fork 2 ,
+.Xr execvp 3 ,
+and supports piping and basic input/output redirection.
+
+The shell repeatedly displays a prompt and waits for user input.
+Commands entered are parsed, executed in child processes, and can
+be chained using pipes.
+
+.Sh FEATURES
+.Bl -bullet
+.It
+Execution of external commands available in the system PATH
+.It
+Pipelining of commands using the pipe operator (`|`)
+.It
+Input redirection using `<`
+.It
+Output redirection using `>`
+.It
+Multiple commands executed sequentially in a pipeline
+.El
+
+.Sh SYNTAX
+The general syntax supported by the shell is:
+
+.Bd -literal
+command [arguments] [ < input_file ] [ > output_file ]
+.Ed
+
+Multiple commands may be chained using pipes:
+
+.Bd -literal
+command1 | command2 | command3
+.Ed
+
+Redirection can be used on individual commands within a pipeline.
+
+.Sh BUILT-IN COMMANDS
+The following built-in commands are supported:
+
+.Bl -tag -width "exit"
+.It Ic exit
+Terminates the shell session.
+.El
+
+.Sh IMPLEMENTATION DETAILS
+.Nm
+uses the following system calls and mechanisms:
+
+.Bl -bullet
+.It
+.Xr fork 2
+to create child processes
+.It
+.Xr execvp 3
+to execute commands
+.It
+.Xr pipe 2
+to establish inter-process communication
+.It
+.Xr dup2 2
+to redirect standard input and output
+.It
+.Xr wait 2
+to synchronize parent and child processes
+.El
+
+Whitespace trimming is performed to ensure correct parsing of commands.
+Arguments are tokenized using space delimiters.
+
+.Sh LIMITATIONS
+.Bl -bullet
+.It
+No support for background execution (`&`)
+.It
+No job control or signal handling
+.It
+No environment variable expansion
+.It
+Maximum number of arguments is limited
+.It
+Built-in commands are minimal
+.El
+
+.Sh EXAMPLES
+Execute a simple command:
+
+.Bd -literal
+Dynamic Abhi:~$ ls
+.Ed
+
+Use output redirection:
+
+.Bd -literal
+Dynamic Abhi:~$ ls > files.txt
+.Ed
+
+Use input redirection:
+
+.Bd -literal
+Dynamic Abhi:~$ sort < data.txt
+.Ed
+
+Use pipes:
+
+.Bd -literal
+Dynamic Abhi:~$ ls | grep ".c" | wc -l
+.Ed
+
+.Sh FILES
+None.
+
+.Sh EXIT STATUS
+The shell exits with status 0 when terminated normally using
+.Ic exit .
+Errors during command execution are reported using standard error output.
+
+.Sh AUTHOR
+Written by Abhijeet Kumar Kuila.
+
+.Sh SEE ALSO
+.Xr sh 1 ,
+.Xr bash 1 ,
+.Xr fork 2 ,
+.Xr execvp 3 ,
+.Xr pipe 2 ,
+.Xr dup2 2 ,
+.Xr wait 2
